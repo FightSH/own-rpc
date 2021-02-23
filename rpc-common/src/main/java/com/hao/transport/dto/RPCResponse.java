@@ -10,6 +10,14 @@ public class RPCResponse<T> implements Serializable {
 
     private T data;
 
+    public RPCResponse() {
+    }
+
+    public RPCResponse(Integer code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
 
     public Integer getCode() {
         return code;
@@ -33,5 +41,14 @@ public class RPCResponse<T> implements Serializable {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "RPCResponse{" +
+                "code=" + code +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

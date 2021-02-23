@@ -11,4 +11,27 @@ public class RPCRequest implements Serializable {
     //方法名
     private String methodName;
 
+    public RPCRequest() {
+    }
+
+    public RPCRequest(String interfaceName, String methodName) {
+        this.interfaceName = interfaceName;
+        this.methodName = methodName;
+    }
+
+    public String getInterfaceName() {
+        return interfaceName;
+    }
+
+    public void setInterfaceName(String interfaceName) {
+        this.interfaceName = interfaceName;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
 }
