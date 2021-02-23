@@ -23,7 +23,6 @@
 hs_err_pid*
 
 /.idea/
-/own-rpc.iml
-/rpc-common/rpc-common.iml
-/rpc-simple/rpc-simple.iml
+*.iml
+
 /rpc-simple/target/classes/META-INF/rpc-simple.kotlin_module
