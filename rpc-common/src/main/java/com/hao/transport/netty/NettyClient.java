@@ -99,6 +99,7 @@ public class NettyClient {
 
         final RPCResponse rpcResponse = nettyClient.sendRequest(rpcRequest);
 
+        logger.info(rpcResponse.toString());
         System.out.println(rpcResponse.toString());
 
     }
