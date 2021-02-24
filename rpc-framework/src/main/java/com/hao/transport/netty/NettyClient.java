@@ -20,21 +20,17 @@ import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class NettyClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
-    private final String host;
-
-    private final int port;
-
     private static final Bootstrap bootstrap;
 
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public NettyClient() {
+
     }
 
     static {
@@ -54,46 +50,12 @@ public class NettyClient {
                     }
                 });
 
-        logger.info("NettyClient is ok ...");
+        logger.info("NettyClient is ready to connect...");
     }
 
 
-    public RPCResponse sendRequest(RPCRequest rpcRequest) {
-        try {
-
-            final ChannelFuture future = bootstrap.connect(host, port).sync();
-            logger.info("client channel is connecting {}", host + ":" + port);
-
-            final Channel channel = future.channel();
-
-            channel.writeAndFlush(rpcRequest).addListener(future1 -> {
-                if (future1.isSuccess()) {
-                    logger.info("send success...");
-                } else {
-                    logger.error("send failed...");
-                }
-            });
-
-            channel.closeFuture().sync();
-            AttributeKey<RPCResponse> key = AttributeKey.valueOf("rpcResponse");
-            return channel.attr(key).get();
-
-
-        } catch (InterruptedException e) {
-            logger.error("something is wrong...");
-        }
-
+    public Channel doConnect(InetSocketAddress inetSocketAddress) {
         return null;
-    }
-
-    public static void main(String[] args) {
-        final RPCRequest rpcRequest = new RPCRequest("interfaceName", "methodName");
-        logger.info("开始了");
-        final NettyClient nettyClient = new NettyClient("127.0.0.1", 9999);
-
-        final RPCResponse rpcResponse = nettyClient.sendRequest(rpcRequest);
-
-        logger.info(rpcResponse.toString());
 
     }
 
