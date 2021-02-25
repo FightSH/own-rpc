@@ -1,7 +1,8 @@
-package com.hao.transport.netty;
+package com.hao.transport.netty.server;
 
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
+import com.hao.transport.netty.client.NettyClient;
 import com.hao.transport.netty.coder.NettyKryoDecoder;
 import com.hao.transport.netty.coder.NettyKryoEncoder;
 import com.hao.transport.serializer.KryoSerializer;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class NettyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
-    private final int port;
+    private  final int port = 9999;
 
     public NettyServer(int port) {
         this.port = port;
@@ -63,9 +64,5 @@ public class NettyServer {
 
     }
 
-    public static void main(String[] args) {
-        final NettyServer nettyServer = new NettyServer(9999);
-        nettyServer.run();
-    }
 
 }

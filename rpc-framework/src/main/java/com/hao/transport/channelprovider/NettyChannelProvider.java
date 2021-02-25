@@ -1,7 +1,7 @@
 package com.hao.transport.channelprovider;
 
 import com.hao.common.factory.SingletonFactory;
-import com.hao.transport.netty.NettyClient;
+import com.hao.transport.netty.client.NettyClient;
 import io.netty.channel.Channel;
 
 import java.net.InetSocketAddress;
