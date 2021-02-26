@@ -3,8 +3,8 @@ package com.hao.transport.netty.server;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
 import com.hao.transport.netty.client.NettyClient;
-import com.hao.transport.netty.coder.NettyKryoDecoder;
-import com.hao.transport.netty.coder.NettyKryoEncoder;
+import com.hao.transport.netty.coder.kryo.NettyKryoDecoder;
+import com.hao.transport.netty.coder.kryo.NettyKryoEncoder;
 import com.hao.transport.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -23,9 +23,6 @@ public class NettyServer {
 
     private  final int port = 9999;
 
-    public NettyServer(int port) {
-        this.port = port;
-    }
 
     private void run() {
         final NioEventLoopGroup bossGroup = new NioEventLoopGroup();
