@@ -16,18 +16,20 @@ public class RPCRequest implements Serializable {
 
     private String requestId;
 
-    private Object parameters;
+    private Object[] parameters;
 
+    private Class<?>[] parameterTypes;
 
 
     public RPCRequest() {
     }
 
-    public RPCRequest(String interfaceName, String methodName, String requestId, Object parameters) {
+    public RPCRequest(String interfaceName, String methodName, String requestId, Object[] parameters, Class<?>[] parameterTypes) {
         this.interfaceName = interfaceName;
         this.methodName = methodName;
         this.requestId = requestId;
         this.parameters = parameters;
+        this.parameterTypes = parameterTypes;
     }
 
     public String getRequestId() {
@@ -38,12 +40,20 @@ public class RPCRequest implements Serializable {
         this.requestId = requestId;
     }
 
-    public Object getParameters() {
+    public Object[] getParameters() {
         return parameters;
     }
 
-    public void setParameters(Object parameters) {
+    public void setParameters(Object[] parameters) {
         this.parameters = parameters;
+    }
+
+    public Class<?>[] getParameterTypes() {
+        return parameterTypes;
+    }
+
+    public void setParameterTypes(Class<?>[] parameterTypes) {
+        this.parameterTypes = parameterTypes;
     }
 
     public String getInterfaceName() {
