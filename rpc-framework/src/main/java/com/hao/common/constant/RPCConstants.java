@@ -12,4 +12,6 @@ public class RPCConstants {
     public static final byte HEARTBEAT_RESPONSE_TYPE = 4;
 
     public static final int HEAD_LENGTH = 16;
+    public static final int MAX_FRAME_LENGTH = 8 * 1024 * 1024;
+    public static final int TOTAL_LENGTH = 16;
 }

@@ -1,14 +1,20 @@
 package com.hao.transport.netty.coder;
 
+import com.hao.common.constant.RPCConstants;
+import com.hao.transport.dto.RPCMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 /**
  * 使用LengthFieldBasedFrameDecoder解决拆包问题
- *
- *  custom protocol decoder
- *  <pre>
+ * <p>
+ * custom protocol decoder
+ * <pre>
  *    0     1     2     3     4        5     6     7     8         9          10      11     12  13  14   15 16
  *    +-----+-----+-----+-----+--------+----+----+----+------+-----------+-------+----- --+-----+-----+-------+
  *    |   magic   code        |version | full length         | messageType| codec|compress|    RequestId       |
@@ -22,11 +28,20 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  *  1B compress（压缩类型） 1B codec（序列化类型）    4B  requestId（请求的Id）
  *  body（object类型数据）
  *  </pre>
- *
- *  有个LengthFieldBasedFrameDecoder知识可见 https://www.jianshu.com/p/a0a51fd79f62 和 https://zhuanlan.zhihu.com/p/95621344
- *
+ * <p>
+ * 有关LengthFieldBasedFrameDecoder知识可见 https://www.jianshu.com/p/a0a51fd79f62 和 https://zhuanlan.zhihu.com/p/95621344
  */
 public class RPCMessageDecoder extends LengthFieldBasedFrameDecoder {
+
+    private static final Logger logger = LoggerFactory.getLogger(RPCMessageDecoder.class);
+
+    public RPCMessageDecoder() {
+        // lengthFieldOffset: magic code is 4B, and version is 1B, and then full length. so value is 5
+        // lengthFieldLength: full length is 4B. so value is 4
+        // lengthAdjustment: full length include all data and read 9 bytes before, so the left length is (fullLength-9). so values is -9
+        // initialBytesToStrip: we will check magic code and version manually, so do not strip any bytes. so values is 0
+        this(RPCConstants.MAX_FRAME_LENGTH, 5, 4, -9, 0);
+    }
 
 
     public RPCMessageDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength,
@@ -37,6 +52,49 @@ public class RPCMessageDecoder extends LengthFieldBasedFrameDecoder {
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-        return super.decode(ctx, in);
+        Object decoded = super.decode(ctx, in);
+        if (decoded instanceof ByteBuf) {
+            ByteBuf frame = (ByteBuf) decoded;
+            if (frame.readableBytes() >= RPCConstants.TOTAL_LENGTH) {
+                try {
+                    return decodeFrame(frame);
+                } catch (Exception e) {
+                    logger.error("Decode frame error!", e);
+                    throw e;
+                } finally {
+                    frame.release();
+                }
+            }
+
+        }
+        return decoded;
+
+
     }
+
+    private Object decodeFrame(ByteBuf in) {
+        int len = RPCConstants.MAGIC_NUMBER.length;
+        final byte[] tmp = new byte[len];
+        in.readBytes(tmp);
+        for (int i = 0; i < len; i++) {
+            if (tmp[i] != RPCConstants.MAGIC_NUMBER[i]) {
+                throw new IllegalArgumentException("Unknown magic code: " + Arrays.toString(tmp));
+            }
+        }
+
+        byte version = in.readByte();
+        if (version != RPCConstants.RPC_VERSION) {
+            throw new RuntimeException("version isn't compatible" + version);
+        }
+
+        int fullLength = in.readInt();
+        // build RpcMessage object
+        byte messageType = in.readByte();
+        byte codecType = in.readByte();
+        byte compressType = in.readByte();
+//        int requestId = in.readInt();
+        final RPCMessage message = new RPCMessage();
+        return message;
+    }
+
 }
