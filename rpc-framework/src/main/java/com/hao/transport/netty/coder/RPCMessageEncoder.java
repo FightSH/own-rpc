@@ -56,7 +56,7 @@ public class RPCMessageEncoder extends MessageToByteEncoder<RPCMessage> {
 
             out.writeByte(msg.getCodec());
 
-            byte[] bodys = null;
+            byte[] bodyObject = null;
             int fullLength = RPCConstants.HEAD_LENGTH;
 
             //todo 引入spi机制
@@ -65,16 +65,16 @@ public class RPCMessageEncoder extends MessageToByteEncoder<RPCMessage> {
 
                 final Serializer serializer = new KryoSerializer();
 
-                bodys = serializer.serialize(msg.getData());
+                bodyObject = serializer.serialize(msg.getData());
 
                 final Compress compress = new GzipCompress();
 
-                bodys = compress.compress(bodys);
+                bodyObject = compress.compress(bodyObject);
 
-                fullLength += bodys.length;
+                fullLength += bodyObject.length;
             }
-            if (bodys != null) {
-                out.writeBytes(bodys);
+            if (bodyObject != null) {
+                out.writeBytes(bodyObject);
             }
             int writeIndex = out.writerIndex();
             out.writerIndex(writeIndex - fullLength + RPCConstants.MAGIC_NUMBER.length + 1);
