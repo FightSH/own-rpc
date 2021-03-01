@@ -14,4 +14,8 @@ public class RPCConstants {
     public static final int HEAD_LENGTH = 16;
     public static final int MAX_FRAME_LENGTH = 8 * 1024 * 1024;
     public static final int TOTAL_LENGTH = 16;
+
+
+    public static final byte REQUEST_TYPE = 1;
+    public static final byte RESPONSE_TYPE = 2;
 }

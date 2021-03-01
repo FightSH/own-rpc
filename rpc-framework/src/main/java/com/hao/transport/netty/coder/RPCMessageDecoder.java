@@ -1,7 +1,13 @@
 package com.hao.transport.netty.coder;
 
+import com.hao.common.compress.Compress;
+import com.hao.common.compress.gzip.GzipCompress;
 import com.hao.common.constant.RPCConstants;
 import com.hao.transport.dto.RPCMessage;
+import com.hao.transport.dto.RPCRequest;
+import com.hao.transport.dto.RPCResponse;
+import com.hao.transport.serializer.KryoSerializer;
+import com.hao.transport.serializer.Serializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -35,6 +41,7 @@ public class RPCMessageDecoder extends LengthFieldBasedFrameDecoder {
 
     private static final Logger logger = LoggerFactory.getLogger(RPCMessageDecoder.class);
 
+    //todo 去除requestId，需要对下列值进行调整
     public RPCMessageDecoder() {
         // lengthFieldOffset: magic code is 4B, and version is 1B, and then full length. so value is 5
         // lengthFieldLength: full length is 4B. so value is 4
@@ -92,8 +99,37 @@ public class RPCMessageDecoder extends LengthFieldBasedFrameDecoder {
         byte messageType = in.readByte();
         byte codecType = in.readByte();
         byte compressType = in.readByte();
-//        int requestId = in.readInt();
+
         final RPCMessage message = new RPCMessage();
+
+        message.setMessageType(messageType);
+        message.setCodec(codecType);
+        message.setCompress(compressType);
+
+        int bodyLength = fullLength - RPCConstants.HEAD_LENGTH;
+
+        if (bodyLength > 0) {
+
+            byte[] bodyObject = new byte[bodyLength];
+            in.readBytes(bodyObject);
+
+            final Compress compress = new GzipCompress();
+            bodyObject = compress.decompress(bodyObject);
+
+
+            final Serializer serializer = new KryoSerializer();
+
+
+            if (messageType == RPCConstants.REQUEST_TYPE) {
+                RPCRequest tmpValue = serializer.deserialize(bodyObject, RPCRequest.class);
+                message.setData(tmpValue);
+            }else {
+                RPCResponse tmpValue = serializer.deserialize(bodyObject, RPCResponse.class);
+                message.setData(tmpValue);
+            }
+
+        }
+
         return message;
     }
 
