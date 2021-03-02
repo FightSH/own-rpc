@@ -1,7 +1,9 @@
 package com.hao.transport;
 
+import com.hao.common.constant.RPCConstants;
 import com.hao.transport.channelprovider.NettyChannelProvider;
 import com.hao.transport.channelprovider.UnprocessedRequest;
+import com.hao.transport.dto.RPCMessage;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
 import io.netty.channel.Channel;
@@ -37,7 +39,14 @@ public class NettyTransport implements TransportInterface {
             unprocessedRequest.put(rpcRequest.getRequestId(), future);
 
 
-            channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener)future1 -> {
+            final RPCMessage rpcMessage = new RPCMessage();
+            rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
+            rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
+            rpcMessage.setMessageType(RPCConstants.REQUEST_TYPE);
+            rpcMessage.setData(rpcRequest);
+
+
+            channel.writeAndFlush(rpcMessage).addListener((ChannelFutureListener) future1 -> {
 
                 if (future1.isSuccess()) {
                     logger.info("send success");
@@ -45,7 +54,7 @@ public class NettyTransport implements TransportInterface {
                 } else {
                     future1.channel().close();
                     future.completeExceptionally(future1.cause());
-                    logger.error("send failed:",future1.cause());
+                    logger.error("send failed:", future1.cause());
 
                 }
 

@@ -1,8 +1,10 @@
 package com.hao.transport.netty.client;
 
+import com.hao.common.constant.RPCConstants;
 import com.hao.common.factory.SingletonFactory;
 import com.hao.transport.channelprovider.NettyChannelProvider;
 import com.hao.transport.channelprovider.UnprocessedRequest;
+import com.hao.transport.dto.RPCMessage;
 import com.hao.transport.dto.RPCResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -25,6 +27,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 读取server返回的信息
+     *
      * @param ctx
      * @param msg
      * @throws Exception
@@ -33,9 +36,16 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
             logger.info("client receive msg: [{}]", msg.toString());
-            if (msg instanceof RPCResponse) {
-                RPCResponse<Object> rpcResponse = (RPCResponse) msg;
-                unprocessedRequest.complete(rpcResponse);
+            if (msg instanceof RPCMessage) {
+                RPCMessage temp = (RPCMessage) msg;
+
+                if (temp.getMessageType() == RPCConstants.RESPONSE_TYPE) {
+
+                    final RPCResponse<Object> rpcResponse = (RPCResponse<Object>) temp.getData();
+                    unprocessedRequest.complete(rpcResponse);
+
+                }
+
             }
         } finally {
             ReferenceCountUtil.release(msg);

@@ -3,6 +3,8 @@ package com.hao.transport.netty.server;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
 import com.hao.transport.netty.client.NettyClient;
+import com.hao.transport.netty.coder.RPCMessageDecoder;
+import com.hao.transport.netty.coder.RPCMessageEncoder;
 import com.hao.transport.netty.coder.kryo.NettyKryoDecoder;
 import com.hao.transport.netty.coder.kryo.NettyKryoEncoder;
 import com.hao.transport.serializer.KryoSerializer;
@@ -41,8 +43,8 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new NettyKryoDecoder(serializer, RPCRequest.class));
-                        ch.pipeline().addLast(new NettyKryoEncoder(serializer, RPCResponse.class));
+                        ch.pipeline().addLast(new RPCMessageDecoder());
+                        ch.pipeline().addLast(new RPCMessageEncoder());
                         ch.pipeline().addLast(new NettyServerHandler());
                     }
                 });

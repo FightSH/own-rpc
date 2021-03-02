@@ -22,7 +22,7 @@ public class RPCResponse<T> implements Serializable {
 
     }
 
-    public static <T>RPCResponse<T> failed(T data, String requestId) {
+    public static <T>RPCResponse<T> failed() {
 
         RPCResponse<T> response = new RPCResponse<T>();
         response.setCode(RPCStatusCode.FAIL.getCode());
