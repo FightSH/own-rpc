@@ -41,19 +41,15 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
                     if (ctx.channel().isActive() && ctx.channel().isWritable()) {
                         response = RPCResponse.success(result, data.getRequestId());
-                        rpcMessage.setData(response);
-                        rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
-                        rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
-                        rpcMessage.setMessageType(RPCConstants.RESPONSE_TYPE);
 
                     } else {
                         response = RPCResponse.failed();
-                        rpcMessage.setData(response);
-                        rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
-                        rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
-                        rpcMessage.setMessageType(RPCConstants.RESPONSE_TYPE);
 
                     }
+                    rpcMessage.setData(response);
+                    rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
+                    rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
+                    rpcMessage.setMessageType(RPCConstants.RESPONSE_TYPE);
 
                 } else if (temp.getMessageType() == RPCConstants.HEARTBEAT_REQUEST_TYPE) {
                     rpcMessage.setMessageType(RPCConstants.HEARTBEAT_RESPONSE_TYPE);
