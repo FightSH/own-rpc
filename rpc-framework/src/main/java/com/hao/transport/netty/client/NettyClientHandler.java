@@ -6,8 +6,11 @@ import com.hao.transport.channelprovider.NettyChannelProvider;
 import com.hao.transport.channelprovider.UnprocessedRequest;
 import com.hao.transport.dto.RPCMessage;
 import com.hao.transport.dto.RPCResponse;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +47,9 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
                     final RPCResponse<Object> rpcResponse = (RPCResponse<Object>) temp.getData();
                     unprocessedRequest.complete(rpcResponse);
 
+                } else if (temp.getMessageType() == RPCConstants.HEARTBEAT_RESPONSE_TYPE) {
+                    RPCResponse<Object> rpcResponse = (RPCResponse<Object>) temp.getData();
+                    unprocessedRequest.complete(rpcResponse);
                 }
 
             }
@@ -60,4 +66,28 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     //todo 覆写心跳连接方法
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+
+        if (evt instanceof IdleStateEvent) {
+            final IdleState state = ((IdleStateEvent) evt).state();
+            if (IdleState.WRITER_IDLE == state) {
+                final RPCMessage rpcMessage = new RPCMessage();
+                rpcMessage.setMessageType(RPCConstants.HEARTBEAT_REQUEST_TYPE);
+                rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
+                rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
+                rpcMessage.setData(RPCConstants.TIK);
+
+                ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+
+
+            }
+
+        } else {
+            super.userEventTriggered(ctx, evt);
+        }
+
+
+    }
 }

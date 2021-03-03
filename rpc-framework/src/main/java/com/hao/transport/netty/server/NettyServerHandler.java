@@ -6,6 +6,8 @@ import com.hao.transport.dto.RPCMessage;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
 import io.netty.channel.*;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,19 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
         } finally {
             ReferenceCountUtil.release(msg);
+        }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleState state = ((IdleStateEvent) evt).state();
+            if (state == IdleState.READER_IDLE) {
+                logger.info("idle check happen, so close the connection");
+                ctx.close();
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
         }
     }
 

@@ -6,6 +6,8 @@ import com.hao.transport.channelprovider.NettyChannelProvider;
 import com.hao.transport.channelprovider.UnprocessedRequest;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
+import com.hao.transport.netty.coder.RPCMessageDecoder;
+import com.hao.transport.netty.coder.RPCMessageEncoder;
 import com.hao.transport.netty.coder.kryo.NettyKryoDecoder;
 import com.hao.transport.netty.coder.kryo.NettyKryoEncoder;
 import com.hao.transport.serializer.KryoSerializer;
@@ -19,12 +21,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class NettyClient {
 
@@ -37,15 +41,15 @@ public class NettyClient {
     public NettyClient() {
         NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
-        final KryoSerializer serializer = new KryoSerializer();
         bootstrap.group(nioEventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new NettyKryoDecoder(serializer, RPCResponse.class));
-                        ch.pipeline().addLast(new NettyKryoEncoder(serializer, RPCRequest.class));
+                        ch.pipeline().addLast(new IdleStateHandler(0, 6, 0, TimeUnit.SECONDS));
+                        ch.pipeline().addLast(new RPCMessageEncoder());
+                        ch.pipeline().addLast(new RPCMessageDecoder());
                         ch.pipeline().addLast(new NettyClientHandler());
 
                     }

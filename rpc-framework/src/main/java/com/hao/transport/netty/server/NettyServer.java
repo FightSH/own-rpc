@@ -17,8 +17,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class NettyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
@@ -29,8 +32,6 @@ public class NettyServer {
     private void run() {
         final NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         final NioEventLoopGroup workGroup = new NioEventLoopGroup();
-
-        final KryoSerializer serializer = new KryoSerializer();
 
         final ServerBootstrap serverBootstrap = new ServerBootstrap();
 
@@ -43,6 +44,7 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS));
                         ch.pipeline().addLast(new RPCMessageDecoder());
                         ch.pipeline().addLast(new RPCMessageEncoder());
                         ch.pipeline().addLast(new NettyServerHandler());
