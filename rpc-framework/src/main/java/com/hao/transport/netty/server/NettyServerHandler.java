@@ -32,32 +32,37 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             if (msg instanceof RPCMessage) {
 
                 RPCMessage temp = (RPCMessage) msg;
+                final RPCMessage rpcMessage = new RPCMessage();
                 if (temp.getMessageType() == RPCConstants.REQUEST_TYPE) {
                     final RPCRequest data = (RPCRequest) temp.getData();
                     final Object result = requestHandler.handle(data);
 
+
+
                     if (ctx.channel().isActive() && ctx.channel().isWritable()) {
                         response = RPCResponse.success(result, data.getRequestId());
-                        final RPCMessage rpcMessage = new RPCMessage();
                         rpcMessage.setData(response);
                         rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
                         rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
                         rpcMessage.setMessageType(RPCConstants.RESPONSE_TYPE);
-
-                        ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
 
                     } else {
                         response = RPCResponse.failed();
-                        final RPCMessage rpcMessage = new RPCMessage();
                         rpcMessage.setData(response);
                         rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
                         rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
                         rpcMessage.setMessageType(RPCConstants.RESPONSE_TYPE);
 
-                        ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
                     }
 
+                } else if (temp.getMessageType() == RPCConstants.HEARTBEAT_REQUEST_TYPE) {
+                    rpcMessage.setMessageType(RPCConstants.HEARTBEAT_RESPONSE_TYPE);
+                    rpcMessage.setCodec(RPCConstants.SerializationTypeEnum.KYRO.getCode());
+                    rpcMessage.setCompress(RPCConstants.CompressTypeEnum.GZIP.getCode());
+                    rpcMessage.setData(RPCConstants.TOK);
+
                 }
+                ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
             }
 
 
