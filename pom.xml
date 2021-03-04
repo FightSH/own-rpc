@@ -11,6 +11,8 @@
     <modules>
         <module>rpc-framework</module>
         <module>rpc-simple</module>
+        <module>rpc-demo-client</module>
+        <module>rpc-demo-server</module>
     </modules>
 
     <build>
