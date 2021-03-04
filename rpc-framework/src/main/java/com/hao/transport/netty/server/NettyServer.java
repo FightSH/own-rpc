@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class NettyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
-    private  final int port = 9999;
+    public static final int PORT = 9999;
 
 
     private void run() {
@@ -52,7 +52,7 @@ public class NettyServer {
                 });
 
         try {
-            final ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
+            final ChannelFuture channelFuture = serverBootstrap.bind(PORT).sync();
             logger.info("NettyServer is ok...");
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
