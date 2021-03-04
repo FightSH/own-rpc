@@ -2,6 +2,7 @@ package com.hao.transport.proxy;
 
 import com.hao.transport.TransportInterface;
 import com.hao.transport.dto.RPCRequest;
+import com.hao.transport.dto.RPCResponse;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -12,6 +13,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class RPCProxy implements InvocationHandler, MethodInterceptor {
 
@@ -48,22 +50,36 @@ public class RPCProxy implements InvocationHandler, MethodInterceptor {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        logger.info("增强方法: [{}]", method.getName());;
+        logger.info("增强方法: [{}]", method.getName());
         //封装RPCRequest类
         final RPCRequest request = new RPCRequest();
         request.setMethodName(method.getName());
         request.setInterfaceName(method.getDeclaringClass().getName());
         request.setParameters(args);
+        request.setParameterTypes(method.getParameterTypes());
         request.setRequestId(UUID.randomUUID().toString());
 
-        transport.sendRequest(request);
+        final CompletableFuture<RPCResponse<Object>> future  = (CompletableFuture<RPCResponse<Object>>) transport.sendRequest(request);
+        final RPCResponse<Object> response = future.get();
 
-
-        return null;
+        return response;
     }
 
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-        return null;
+        logger.info("增强方法: [{}]", method.getName());
+
+        //封装RPCRequest类
+        final RPCRequest request = new RPCRequest();
+        request.setMethodName(method.getName());
+        request.setInterfaceName(method.getDeclaringClass().getName());
+        request.setParameters(objects);
+        request.setParameterTypes(method.getParameterTypes());
+        request.setRequestId(UUID.randomUUID().toString());
+
+        final CompletableFuture<RPCResponse<Object>> future  = (CompletableFuture<RPCResponse<Object>>) transport.sendRequest(request);
+        final RPCResponse<Object> response = future.get();
+
+        return response;
     }
 }

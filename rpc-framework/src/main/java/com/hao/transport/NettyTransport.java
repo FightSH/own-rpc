@@ -1,6 +1,9 @@
 package com.hao.transport;
 
 import com.hao.common.constant.RPCConstants;
+import com.hao.common.factory.SingletonFactory;
+import com.hao.registry.ServiceDiscovery;
+import com.hao.registry.zookeeper.ZKServiceDiscovery;
 import com.hao.transport.channelprovider.NettyChannelProvider;
 import com.hao.transport.channelprovider.UnprocessedRequest;
 import com.hao.transport.dto.RPCMessage;
@@ -18,19 +21,27 @@ public class NettyTransport implements TransportInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyTransport.class);
 
+    private ServiceDiscovery serviceDiscovery;
+
     private NettyChannelProvider channelProvider;
 
     private UnprocessedRequest unprocessedRequest;
 
+    public NettyTransport() {
+        serviceDiscovery = new ZKServiceDiscovery();
+        channelProvider = SingletonFactory.getInstance(NettyChannelProvider.class);
+        unprocessedRequest = SingletonFactory.getInstance(UnprocessedRequest.class);
+    }
 
     @Override
-    public Object sendRequest(RPCRequest rpcRequest) {
+    public CompletableFuture<RPCResponse<Object>> sendRequest(RPCRequest rpcRequest) {
 
         //todo 从配置文件中或配置中心获取ip和端口
+        final InetSocketAddress inetSocketAddress = serviceDiscovery.discoveryService(rpcRequest.getInterfaceName());
 
-        final InetSocketAddress socketAddress = new InetSocketAddress("127.0.0.1", 9999);
+//        final InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 9999);
 
-        final Channel channel = channelProvider.get(socketAddress);
+        final Channel channel = channelProvider.get(inetSocketAddress);
 
         CompletableFuture<RPCResponse<Object>> future = new CompletableFuture<>();
 
@@ -61,6 +72,8 @@ public class NettyTransport implements TransportInterface {
             });
 
 
+        } else {
+            throw new IllegalStateException();
         }
 
 
