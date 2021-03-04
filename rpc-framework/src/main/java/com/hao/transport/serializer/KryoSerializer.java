@@ -4,12 +4,12 @@ package com.hao.transport.serializer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.hao.common.exception.KryoSerializerException;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * kryo序列化方式。kryo非线程安全，因此使用ThreadLocal进行保存
