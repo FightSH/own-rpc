@@ -4,8 +4,8 @@ import com.hao.common.constant.RPCErrorMessageEnum;
 import com.hao.common.exception.RPCException;
 import com.hao.registry.ServiceDiscovery;
 import com.hao.registry.loadbalance.LoadBalance;
-import com.hao.registry.loadbalance.impl.RandomLoadBalance;
 import com.hao.registry.zookeeper.util.CuratorUtils;
+import com.hao.spi.ExtensionLoader;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class ZKServiceDiscovery implements ServiceDiscovery {
     private LoadBalance loadBalance;
 
     public ZKServiceDiscovery() {
-        this.loadBalance = new RandomLoadBalance();
+        final LoadBalance loadBalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension("loadBalance");
     }
 
 

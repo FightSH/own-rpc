@@ -1,12 +1,11 @@
 package com.hao.transport.netty.coder;
 
 import com.hao.common.compress.Compress;
-import com.hao.common.compress.gzip.GzipCompress;
 import com.hao.common.constant.RPCConstants;
+import com.hao.spi.ExtensionLoader;
 import com.hao.transport.dto.RPCMessage;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
-import com.hao.transport.serializer.KryoSerializer;
 import com.hao.transport.serializer.Serializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -113,11 +112,11 @@ public class RPCMessageDecoder extends LengthFieldBasedFrameDecoder {
             byte[] bodyObject = new byte[bodyLength];
             in.readBytes(bodyObject);
 
-            final Compress compress = new GzipCompress();
+            final Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension("gzip");
             bodyObject = compress.decompress(bodyObject);
 
 
-            final Serializer serializer = new KryoSerializer();
+            final Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension("kryo");
 
 
             if (messageType == RPCConstants.REQUEST_TYPE) {

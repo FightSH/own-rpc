@@ -4,6 +4,7 @@ import com.hao.common.constant.RPCConstants;
 import com.hao.common.factory.SingletonFactory;
 import com.hao.registry.ServiceDiscovery;
 import com.hao.registry.zookeeper.ZKServiceDiscovery;
+import com.hao.spi.ExtensionLoader;
 import com.hao.transport.channelprovider.NettyChannelProvider;
 import com.hao.transport.channelprovider.UnprocessedRequest;
 import com.hao.transport.dto.RPCMessage;
@@ -28,7 +29,7 @@ public class NettyTransport implements TransportInterface {
     private UnprocessedRequest unprocessedRequest;
 
     public NettyTransport() {
-        serviceDiscovery = new ZKServiceDiscovery();
+        serviceDiscovery = ExtensionLoader.getExtensionLoader(ServiceDiscovery.class).getExtension("zookeeper");
         channelProvider = SingletonFactory.getInstance(NettyChannelProvider.class);
         unprocessedRequest = SingletonFactory.getInstance(UnprocessedRequest.class);
     }

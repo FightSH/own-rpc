@@ -4,10 +4,12 @@ import com.hao.common.constant.RPCErrorMessageEnum;
 import com.hao.common.exception.RPCException;
 import com.hao.registry.ServiceRegister;
 import com.hao.registry.zookeeper.ZKServiceRegister;
+import com.hao.spi.ExtensionLoader;
 import com.hao.transport.netty.server.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.spi.ServiceRegistry;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -26,7 +28,8 @@ public class ServiceProviderImpl implements ServiceProvider {
     public ServiceProviderImpl() {
         serviceMap = new ConcurrentHashMap<>();
         registeredService = ConcurrentHashMap.newKeySet();
-        serviceRegister = new ZKServiceRegister();
+
+        serviceRegister = ExtensionLoader.getExtensionLoader(ServiceRegister.class).getExtension("zookeeper");
     }
 
 
