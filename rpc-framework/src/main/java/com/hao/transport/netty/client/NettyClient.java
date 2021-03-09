@@ -7,10 +7,7 @@ import com.hao.transport.channelprovider.UnprocessedRequest;
 import com.hao.transport.netty.coder.RPCMessageDecoder;
 import com.hao.transport.netty.coder.RPCMessageEncoder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -29,14 +26,13 @@ public class NettyClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
-    private  final Bootstrap bootstrap;
-    private final UnprocessedRequest unprocessedRequests;
-    private final NettyChannelProvider channelProvider;
+    private final Bootstrap bootstrap;
+    private final EventLoopGroup eventLoopGroup;
 
     public NettyClient() {
-        NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
+        eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
-        bootstrap.group(nioEventLoopGroup)
+        bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
@@ -50,13 +46,8 @@ public class NettyClient {
                     }
                 });
 
-
-        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequest.class);
-        this.channelProvider = SingletonFactory.getInstance(NettyChannelProvider.class);
         logger.info("NettyClient is ready to connect...");
     }
-
-
 
 
     public Channel doConnect(InetSocketAddress inetSocketAddress) {
@@ -79,6 +70,10 @@ public class NettyClient {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void close() {
+        eventLoopGroup.shutdownGracefully();
     }
 
 
