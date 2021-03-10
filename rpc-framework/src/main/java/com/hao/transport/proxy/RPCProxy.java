@@ -21,6 +21,10 @@ public class RPCProxy implements InvocationHandler, MethodInterceptor {
 
     private TransportInterface transport;
 
+    public RPCProxy(TransportInterface transport) {
+        this.transport = transport;
+    }
+
     /**
      * 通过jdk方式获取代理
      * @param clazz
