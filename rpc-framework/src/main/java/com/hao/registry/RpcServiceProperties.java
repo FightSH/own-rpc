@@ -54,7 +54,7 @@ public class RpcServiceProperties {
                 '}';
     }
 
-    public String toRpcServiceName() {
+    public String toRpcServiceInfo() {
         return this.getServiceName() + this.getGroup() + this.getVersion();
     }
 

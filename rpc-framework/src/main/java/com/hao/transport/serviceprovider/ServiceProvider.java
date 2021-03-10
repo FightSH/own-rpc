@@ -1,28 +1,30 @@
 package com.hao.transport.serviceprovider;
 
+import com.hao.registry.RpcServiceProperties;
+import com.hao.spi.RPCSPI;
+
+@RPCSPI
 public interface ServiceProvider {
 
     /**
-     *
-     * @param service
+     *  @param service
      * @param serviceClass
-     * @param serviceName
+     * @param serviceProperties
      */
-    void addService(Object service, Class<?> serviceClass,  String serviceName);
+    void addService(Object service, Class<?> serviceClass, RpcServiceProperties serviceProperties);
 
     /**
      *
-     * @param serviceName
+     * @param serviceProperties
      * @return
      */
-    Object getService(String serviceName);
+    Object getService(RpcServiceProperties serviceProperties);
 
     /**
-     *
-     * @param service
-     * @param serviceName
+     *  @param service
+     * @param serviceProperties
      */
-    void publishService(Object service, String serviceName);
+    void publishService(Object service, RpcServiceProperties serviceProperties);
 
 
 }

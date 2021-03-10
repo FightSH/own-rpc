@@ -2,6 +2,7 @@ package com.hao.transport.netty.server;
 
 import com.hao.common.factory.SingletonFactory;
 import com.hao.common.utils.ThreadPoolFactoryUtils;
+import com.hao.registry.RpcServiceProperties;
 import com.hao.shutdown.CustomShutdownHook;
 import com.hao.transport.netty.client.NettyClient;
 import com.hao.transport.netty.coder.RPCMessageDecoder;
@@ -34,8 +35,8 @@ public class NettyServer {
 
     private final ServiceProvider serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
 
-    public void registerService(Object service, String serviceName) {
-        serviceProvider.publishService(service, serviceName);
+    public void registerService(Object service, RpcServiceProperties rpcServiceProperties) {
+        serviceProvider.publishService(service, rpcServiceProperties);
     }
 
 

@@ -27,7 +27,7 @@ public class RequestHandler {
     public Object handle(RPCRequest rpcRequest) {
         Object result = null;
         try {
-            final Object serviceBean = serviceProvider.getService(rpcRequest.getInterfaceName());
+            final Object serviceBean = serviceProvider.getService(rpcRequest.toRpcProperties());
             final String methodName = rpcRequest.getMethodName();
             final Object parameters = rpcRequest.getParameters();
 

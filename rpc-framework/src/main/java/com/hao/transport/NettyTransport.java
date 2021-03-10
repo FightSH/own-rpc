@@ -3,7 +3,6 @@ package com.hao.transport;
 import com.hao.common.constant.RPCConstants;
 import com.hao.common.factory.SingletonFactory;
 import com.hao.registry.ServiceDiscovery;
-import com.hao.registry.zookeeper.ZKServiceDiscovery;
 import com.hao.spi.ExtensionLoader;
 import com.hao.transport.channelprovider.NettyChannelProvider;
 import com.hao.transport.channelprovider.UnprocessedRequest;
@@ -37,8 +36,7 @@ public class NettyTransport implements TransportInterface {
     @Override
     public CompletableFuture<RPCResponse<Object>> sendRequest(RPCRequest rpcRequest) {
 
-        //todo 从配置文件中或配置中心获取ip和端口
-        final InetSocketAddress inetSocketAddress = serviceDiscovery.discoveryService(rpcRequest.getInterfaceName());
+        final InetSocketAddress inetSocketAddress = serviceDiscovery.discoveryService(rpcRequest.toRpcProperties().toRpcServiceInfo());
 
 //        final InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 9999);
 

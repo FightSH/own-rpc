@@ -3,6 +3,7 @@ package com.hao.spring;
 import com.hao.annotation.RPCReference;
 import com.hao.annotation.RPCService;
 import com.hao.common.factory.SingletonFactory;
+import com.hao.registry.RpcServiceProperties;
 import com.hao.spi.ExtensionLoader;
 import com.hao.transport.TransportInterface;
 import com.hao.transport.proxy.RPCProxy;
@@ -40,7 +41,11 @@ public class RPCBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean.getClass().isAnnotationPresent(RPCService.class)) {
             RPCService rpcService = bean.getClass().getAnnotation(RPCService.class);
-            serviceProvider.publishService(bean, beanName);
+
+            RpcServiceProperties rpcServiceProperties = new RpcServiceProperties();
+            rpcServiceProperties.setGroup(rpcService.group());
+            rpcServiceProperties.setVersion(rpcService.version());
+            serviceProvider.publishService(bean, rpcServiceProperties);
         }
 
         return bean;

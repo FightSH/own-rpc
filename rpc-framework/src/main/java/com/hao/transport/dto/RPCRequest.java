@@ -1,5 +1,7 @@
 package com.hao.transport.dto;
 
+import com.hao.registry.RpcServiceProperties;
+
 import java.io.Serializable;
 
 /**
@@ -20,16 +22,42 @@ public class RPCRequest implements Serializable {
 
     private Class<?>[] parameterTypes;
 
+    private String version;
+
+    private String group;
+
+
+    public RpcServiceProperties toRpcProperties() {
+        return new RpcServiceProperties(this.getInterfaceName(), this.getGroup(), this.getVersion());
+    }
 
     public RPCRequest() {
     }
 
-    public RPCRequest(String interfaceName, String methodName, String requestId, Object[] parameters, Class<?>[] parameterTypes) {
+    public RPCRequest(String interfaceName, String methodName, String requestId, Object[] parameters, Class<?>[] parameterTypes, String version, String group) {
         this.interfaceName = interfaceName;
         this.methodName = methodName;
         this.requestId = requestId;
         this.parameters = parameters;
         this.parameterTypes = parameterTypes;
+        this.version = version;
+        this.group = group;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getRequestId() {

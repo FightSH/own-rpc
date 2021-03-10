@@ -2,14 +2,13 @@ package com.hao.transport.serviceprovider;
 
 import com.hao.common.constant.RPCErrorMessageEnum;
 import com.hao.common.exception.RPCException;
+import com.hao.registry.RpcServiceProperties;
 import com.hao.registry.ServiceRegister;
-import com.hao.registry.zookeeper.ZKServiceRegister;
 import com.hao.spi.ExtensionLoader;
 import com.hao.transport.netty.server.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.spi.ServiceRegistry;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -33,37 +32,36 @@ public class ServiceProviderImpl implements ServiceProvider {
     }
 
 
-
     @Override
-    public void addService(Object service, Class<?> serviceClass, String serviceName) {
-        if (registeredService.contains(serviceName)) {
+    public void addService(Object service, Class<?> serviceClass, RpcServiceProperties serviceProperties) {
+        String rpcServiceInfo = serviceProperties.toRpcServiceInfo();
+        if (registeredService.contains(rpcServiceInfo)) {
             return;
         }
-        registeredService.add(serviceName);
-        serviceMap.put(serviceName, service);
-
+        registeredService.add(rpcServiceInfo);
+        serviceMap.put(rpcServiceInfo, service);
 
     }
 
     @Override
-    public Object getService(String serviceName) {
-        Object service = serviceMap.get(serviceName);
+    public Object getService(RpcServiceProperties serviceProperties) {
+        Object service = serviceMap.get(serviceProperties.toRpcServiceInfo());
         if (null == service) {
             throw new RPCException(RPCErrorMessageEnum.NOT_FOUND_NEED_SERVICE);
         }
         return service;
     }
 
+
     @Override
-    public void publishService(Object service, String serviceName) {
+    public void publishService(Object service, RpcServiceProperties serviceProperties) {
         try {
             String host = InetAddress.getLocalHost().getHostAddress();
             Class<?> serviceRelatedInterface = service.getClass().getInterfaces()[0];
-            if (serviceName == null || serviceName.length() == 0) {
-                serviceName = serviceRelatedInterface.getCanonicalName();
-            }
-            this.addService(service, serviceRelatedInterface, serviceName);
-            serviceRegister.registerService(serviceName,new InetSocketAddress(host, NettyServer.PORT));
+            String serviceName = serviceRelatedInterface.getCanonicalName();
+            serviceProperties.setServiceName(serviceName);
+            this.addService(service, serviceRelatedInterface, serviceProperties);
+            serviceRegister.registerService(serviceProperties.toRpcServiceInfo(), new InetSocketAddress(host, NettyServer.PORT));
         } catch (UnknownHostException e) {
             logger.error("occur exception when getHostAddress", e);
         }
