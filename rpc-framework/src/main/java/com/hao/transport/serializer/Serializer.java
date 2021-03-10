@@ -1,5 +1,8 @@
 package com.hao.transport.serializer;
 
+import com.hao.spi.RPCSPI;
+
+@RPCSPI
 public interface Serializer {
     /**
      * 序列化

@@ -1,5 +1,8 @@
 package com.hao.common.compress;
 
+import com.hao.spi.RPCSPI;
+
+@RPCSPI
 public interface Compress {
 
 

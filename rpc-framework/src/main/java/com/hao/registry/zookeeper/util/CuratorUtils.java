@@ -1,5 +1,7 @@
 package com.hao.registry.zookeeper.util;
 
+import com.hao.common.config.RPCConfigEnum;
+import com.hao.common.utils.PropertiesFileUtil;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -40,6 +42,12 @@ public class CuratorUtils {
      * @return
      */
     public static CuratorFramework getZkClient() {
+
+
+        Properties properties = PropertiesFileUtil.readPropertiesFile(RPCConfigEnum.RPC_CONFIG_PATH.getPropertyValue());
+        if (properties != null) {
+            DEFAULT_ZOOKEEPER_ADDRESS_PORT = properties.getProperty(RPCConfigEnum.ZK_ADDRESS.getPropertyValue());
+        }
 
         if (zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) {
             return zkClient;

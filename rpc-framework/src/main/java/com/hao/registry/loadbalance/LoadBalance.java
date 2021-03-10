@@ -1,7 +1,9 @@
 package com.hao.registry.loadbalance;
 
-import java.util.List;
+import com.hao.spi.RPCSPI;
 
+import java.util.List;
+@RPCSPI
 public interface LoadBalance {
 
     String selectServiceAddress(List<String> serviceAddresses, String rpcServiceName);
