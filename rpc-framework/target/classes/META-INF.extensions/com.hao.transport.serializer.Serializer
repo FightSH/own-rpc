@@ -1,0 +1,1 @@
+kryo=com.hao.transport.serializer.KryoSerializer

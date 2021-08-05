@@ -30,7 +30,7 @@ public class CuratorUtils {
     private static final Map<String, List<String>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap();
     private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
     private static CuratorFramework zkClient;
-    private static String DEFAULT_ZOOKEEPER_ADDRESS_PORT = "127.0.0.1:8888";
+    private static String DEFAULT_ZOOKEEPER_ADDRESS_PORT = "47.100.79.39:8888";
 
     private CuratorUtils() {
 
