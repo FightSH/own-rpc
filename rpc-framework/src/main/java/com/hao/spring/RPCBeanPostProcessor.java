@@ -11,12 +11,14 @@ import com.hao.transport.serviceprovider.ServiceProvider;
 import com.hao.transport.serviceprovider.ServiceProviderImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
 /**
  * 结合spring，在bean生成时注册服务以及生成代理
  */
+@Component
 public class RPCBeanPostProcessor implements BeanPostProcessor {
 
 
