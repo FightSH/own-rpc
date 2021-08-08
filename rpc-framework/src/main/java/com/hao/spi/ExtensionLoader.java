@@ -31,7 +31,7 @@ public class ExtensionLoader<T> {
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<>();
 
 
-    public ExtensionLoader(Class<?> type) {
+    private ExtensionLoader(Class<?> type) {
         this.type = type;
     }
 
