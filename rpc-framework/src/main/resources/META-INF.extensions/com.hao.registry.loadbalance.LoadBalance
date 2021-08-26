@@ -1,1 +1,0 @@
-loadBalance=com.hao.registry.loadbalance.impl.RandomLoadBalance
