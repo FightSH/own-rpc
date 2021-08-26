@@ -1,5 +1,7 @@
 package com.hao.registry.zookeeper.util;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.google.common.collect.Collections2;
 import com.hao.common.config.RPCConfigEnum;
 import com.hao.common.utils.PropertiesFileUtil;
 import org.apache.curator.RetryPolicy;
@@ -13,11 +15,9 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CuratorUtils {
@@ -30,7 +30,7 @@ public class CuratorUtils {
     private static final Map<String, List<String>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap();
     private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
     private static CuratorFramework zkClient;
-    private static String DEFAULT_ZOOKEEPER_ADDRESS_PORT = "47.100.79.39:8888";
+    private static String DEFAULT_ZOOKEEPER_ADDRESS_PORT = "47.100.79.39:2181";
 
     private CuratorUtils() {
 
@@ -45,7 +45,7 @@ public class CuratorUtils {
 
 
         Properties properties = PropertiesFileUtil.readPropertiesFile(RPCConfigEnum.RPC_CONFIG_PATH.getPropertyValue());
-        if (properties != null) {
+        if (CollectionUtil.isNotEmpty(properties)) {
             DEFAULT_ZOOKEEPER_ADDRESS_PORT = properties.getProperty(RPCConfigEnum.ZK_ADDRESS.getPropertyValue());
         }
 

@@ -1,5 +1,6 @@
 package com.hao.transport.proxy;
 
+import com.hao.common.config.RPCServiceConfig;
 import com.hao.transport.TransportInterface;
 import com.hao.transport.dto.RPCRequest;
 import com.hao.transport.dto.RPCResponse;
@@ -21,7 +22,9 @@ public class RPCProxy implements InvocationHandler, MethodInterceptor {
 
     private TransportInterface transport;
 
-    public RPCProxy(TransportInterface transport) {
+    private RPCServiceConfig rpcServiceInfo;
+
+    public RPCProxy(TransportInterface transport, RPCServiceConfig serviceConfig) {
         this.transport = transport;
     }
 
@@ -62,6 +65,8 @@ public class RPCProxy implements InvocationHandler, MethodInterceptor {
         request.setParameters(args);
         request.setParameterTypes(method.getParameterTypes());
         request.setRequestId(UUID.randomUUID().toString());
+        request.setGroup(rpcServiceInfo.getGroup());
+        request.setVersion(rpcServiceInfo.getVersion());
 
         final CompletableFuture<RPCResponse<Object>> future  = (CompletableFuture<RPCResponse<Object>>) transport.sendRequest(request);
         final RPCResponse<Object> response = future.get();
@@ -80,6 +85,8 @@ public class RPCProxy implements InvocationHandler, MethodInterceptor {
         request.setParameters(objects);
         request.setParameterTypes(method.getParameterTypes());
         request.setRequestId(UUID.randomUUID().toString());
+        request.setGroup(rpcServiceInfo.getGroup());
+        request.setVersion(rpcServiceInfo.getVersion());
 
         final CompletableFuture<RPCResponse<Object>> future  = (CompletableFuture<RPCResponse<Object>>) transport.sendRequest(request);
         final RPCResponse<Object> response = future.get();

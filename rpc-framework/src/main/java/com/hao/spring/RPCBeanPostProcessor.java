@@ -2,6 +2,7 @@ package com.hao.spring;
 
 import com.hao.annotation.RPCReference;
 import com.hao.annotation.RPCService;
+import com.hao.common.config.RPCServiceConfig;
 import com.hao.common.factory.SingletonFactory;
 import com.hao.registry.RpcServiceProperties;
 import com.hao.spi.ExtensionLoader;
@@ -66,13 +67,24 @@ public class RPCBeanPostProcessor implements BeanPostProcessor {
         final Field[] declaredFields = beanClass.getDeclaredFields();
 
         for (Field declaredField : declaredFields) {
-            if (declaredField.isAnnotationPresent(RPCReference.class)) {
-                final RPCProxy rpcProxy = new RPCProxy(rpcClient);
+            RPCReference rpcReference = declaredField.getAnnotation(RPCReference.class);
+            if (rpcReference != null) {
+
+                RPCServiceConfig serviceConfig = new RPCServiceConfig(rpcReference.version(), rpcReference.group());
+                String proxyType = rpcReference.proxyType();
+
+                final RPCProxy rpcProxy = new RPCProxy(rpcClient,serviceConfig);
                 //可通过注解选择
-                final Object proxyByJDK = rpcProxy.getProxyByJDK(declaredField.getType());
+                Object proxy = null;
+                if (proxyType.equals("jdk")) {
+                     proxy = rpcProxy.getProxyByJDK(declaredField.getType());
+                }else {
+                     proxy = rpcProxy.getProxyByCGLIB(declaredField.getType());
+                }
+
                 declaredField.setAccessible(true);
                 try {
-                    declaredField.set(bean, proxyByJDK);
+                    declaredField.set(bean, proxy);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

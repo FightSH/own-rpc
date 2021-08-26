@@ -38,8 +38,6 @@ public class NettyTransport implements TransportInterface {
 
         final InetSocketAddress inetSocketAddress = serviceDiscovery.discoveryService(rpcRequest.toRpcProperties().toRpcServiceInfo());
 
-//        final InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 9999);
-
         final Channel channel = channelProvider.get(inetSocketAddress);
 
         CompletableFuture<RPCResponse<Object>> future = new CompletableFuture<>();
