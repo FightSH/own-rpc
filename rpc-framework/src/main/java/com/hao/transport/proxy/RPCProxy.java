@@ -26,6 +26,7 @@ public class RPCProxy implements InvocationHandler, MethodInterceptor {
 
     public RPCProxy(TransportInterface transport, RPCServiceConfig serviceConfig) {
         this.transport = transport;
+        this.rpcServiceInfo = serviceConfig;
     }
 
     /**

@@ -28,7 +28,7 @@ public class RPCRequest implements Serializable {
 
 
     public RpcServiceProperties toRpcProperties() {
-        return new RpcServiceProperties(this.getInterfaceName(), this.getGroup(), this.getVersion());
+        return new RpcServiceProperties(this.getVersion(), this.getGroup(), this.getInterfaceName());
     }
 
     public RPCRequest() {

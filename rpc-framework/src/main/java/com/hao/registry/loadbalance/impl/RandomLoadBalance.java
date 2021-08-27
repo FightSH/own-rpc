@@ -1,6 +1,7 @@
 package com.hao.registry.loadbalance.impl;
 
 import com.hao.registry.loadbalance.AbstractLoadBalance;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Random;
